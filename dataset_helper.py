@@ -172,11 +172,13 @@ def dataset_list(path="/opt/Project/dataset/faces", items=10):
             #     test_counter = 50
             #     train_counter = 200
 
-            # print dir, len(workdict[dir]), len(workdict[dir])/10
-            chunk = len(workdict[dir]) / 10
-            test_counter = (chunk * 20) / 100
-            train_counter = (chunk * 60) / 100
-            #print key, chunk, test_counter, train_counter
+            length = len(namelist)
+            if not length:
+                continue
+            else:
+                test_counter = length * 2 / 100
+                train_counter = length * 6 / 100
+
 
             for counter in range(test_counter):
                 try:
