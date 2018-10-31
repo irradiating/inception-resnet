@@ -85,6 +85,10 @@ def dataset_dump_expand():
         filename = "/opt/Project/dataset/labelfile.csv"
     elif os.path.exists("/opt/Projects/dataset/labelfile.csv"):
         filename = "/opt/Projects/dataset/labelfile.csv"
+
+    for counter in range(161, 1001):
+        print counter
+
     print filename
 
 
@@ -261,13 +265,9 @@ if __name__ == "__main__":
     #dataset_assemble(faces_path)
     #dataset_load()
 
-    list = dataset_list(faces_128_path)
-    print len(list)
-    for train, test, validate in list:
-        print len(train), len(test), len(validate)
+    # list = dataset_list(faces_128_path)
+    # print len(list)
+    # for train, test, validate in list:
+    #     print len(train), len(test), len(validate)
 
-    #resize_and_rename(faces_path, faces_128_path)
-
-    #labelfile_append("topkin")
-    #labelfile_get_by_name("topkin")
-    #labelfile_get_by_index(7)
+    dataset_dump_expand()
