@@ -85,6 +85,7 @@ def dataset_dump_expand():
         filename = "/opt/Project/dataset/labelfile.csv"
     elif os.path.exists("/opt/Projects/dataset/labelfile.csv"):
         filename = "/opt/Projects/dataset/labelfile.csv"
+    print filename
 
 
 def dataset_assemble(path="/opt/Project/dataset/employee/"):
