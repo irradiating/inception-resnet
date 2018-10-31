@@ -40,7 +40,10 @@ def inception_train_faces():
         samples_validate, labels_validate = dataset_smalllist_prepare(validate)
         print
 
-        continue
+        if labels.shape[1] != labels_test.shape[1]:
+            continue
+        elif labels.shape[1] != labels_validate.shape[1]:
+            continue
 
         print "training model"
         model.fit(samples, labels, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(samples_validate, labels_validate))
