@@ -80,6 +80,13 @@ def initial_make_small_dir_chunks(root_dset_path):
 
             counter += 1
 
+def dataset_dump_expand():
+    if os.path.exists("/opt/Project/dataset/labelfile.csv"):
+        filename = "/opt/Project/dataset/labelfile.csv"
+    elif os.path.exists("/opt/Projects/dataset/labelfile.csv"):
+        filename = "/opt/Projects/dataset/labelfile.csv"
+
+
 def dataset_assemble(path="/opt/Project/dataset/employee/"):
 
     for setname in ["test", "validate"]:
