@@ -3,7 +3,7 @@
 from keras.utils import np_utils
 import numpy as np
 import pandas as pd
-import os, sys, time, datetime, cv2
+import os, sys, time, datetime, cv2, random, shutil
 
 
 def numpy_save(samples, labels, name):
@@ -86,10 +86,31 @@ def dataset_dump_expand():
     elif os.path.exists("/opt/Projects/dataset/labelfile.csv"):
         filename = "/opt/Projects/dataset/labelfile.csv"
 
-    for counter in range(161, 1001):
-        print counter
+    other_path = "/opt/Projects/dataset/faces/other"
+    dst_path = "/opt/Projects/dataset/faces"
 
-    print filename
+    for item in os.walk(other_path):
+        other_short_contents = item[2]
+
+    # dirlist = ['alicia', 'angelina', 'batrudinov', 'blur', 'bryce', 'chernishevich', 'chuprak', 'deltoro', 'duglas', 'ella', 'famke', 'han', 'janice', 'jessa', 'jorjeva', 'junk', 'kalashnikov', 'kayden', 'klimovskiy', 'kostuk', 'lili', 'mia', 'monique', 'olsen', 'other', 'peaks', 'penya', 'perec', 'peta', 'pratt', 'priemka', 'rachel', 'riley', 'romi', 'rud', 'sisoeva', 'strange', 'tori', 'vershinina', 'vicenko', 'yanov', 'yaskovich']
+    # for dir in dirlist:
+    #     file.write( "%s:\n" %(dir) )
+    # file = open(filename, "r")
+    # file.close()
+
+    for counter in range(178, 1001):
+        move_path = os.path.join(dst_path, str(counter))
+
+        for inner_couner in range(100):
+            short_name = random.choice( other_short_contents )
+
+            src_name = os.path.join(other_path, short_name)
+            dst_name = os.path.join(move_path, short_name)
+
+            shutil.copy2(src=src_name, dst=dst_name)
+
+
+
 
 
 def dataset_assemble(path="/opt/Project/dataset/employee/"):
@@ -139,6 +160,11 @@ def dataset_smalllist_prepare(samplelist):
     return samples, labels
 
 def dataset_list(path="/opt/Project/dataset/faces", items=10):
+    if os.path.exists("/opt/Project/dataset/faces"):
+        path = "/opt/Project/dataset/faces"
+    elif os.path.exists("/opt/Projects/dataset/faces"):
+        path = "/opt/Projects/dataset/faces"
+
     items = 10
 
     workdict = {}
