@@ -25,12 +25,40 @@ def inception_v3_model_detector():
 
 
 def inception_train_faces():
+
+
+    ## make model
+
+    detector = inception_resnet_v2_model_detector()
+
+    # make detector layers not trainable
+    for layer in detector.layers:
+        # print layer
+        layer.trainable = False
+
+    x = Flatten()(detector.output)
+    x = Dense(4096, activation="relu")(x)
+    x = Dense(num_labels, activation="softmax")(x)
+
+    model = Model(detector.input, x)
+
+    model.compile(optimizer="rmsprop", loss="categorical_crossentropy")
+
+    print model.summary()
+
+
+    ## train model
+
     batch_size = 20
     epochs = 200
 
     if os.path.exists(weights_filename):
-        print "loading existing weights"
+        print "loading existing model weights"
         model.load_weights(weights_filename)
+    elif os.path.exists(weights_detector_filename):
+        print "loading existing detector weights"
+        detector.load_weights(weights_detector_filename)
+
 
     print "loading dataset"
     datalist = dataset_list(faces_path)
@@ -47,8 +75,11 @@ def inception_train_faces():
 
         print "training model"
         model.fit(samples, labels, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(samples_validate, labels_validate))
-        print "saving weights"
+
+        print "saving model weights"
         model.save_weights(weights_filename, overwrite=True)
+        print "saving detector weights"
+        model.save_weights(weights_detector_filename, overwrite=True)
 
         try:
             print "evaluating model"
@@ -108,8 +139,6 @@ def cycle_recognize_move(model, path="/opt/Project/dataset/camface"):
         dst_filename = os.path.join(dstdir, short_name)
         os.rename(full_name, dst_filename)
 
-
-
 def make_precompiled_model():
 
     detector = inception_resnet_v2_model_detector()
@@ -132,13 +161,12 @@ def make_precompiled_model():
     return model
 
 
-
-
 if __name__ == "__main__":
     weights_filename = "inception_resnet_v2.hdf"
+    weights_detector_filename = "inception_resnet_v2_detector.hdf"
     faces_path = "/opt/Project/dataset/faces"
-    num_labels = 188
+    num_labels = 999
 
-    model = make_precompiled_model()
+    #model = make_precompiled_model()
 
     inception_train_faces()
