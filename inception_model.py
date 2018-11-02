@@ -11,21 +11,30 @@ from dataset_helper import dataset_list, dataset_smalllist_prepare, labelfile_ge
 
 
 def inception_resnet_v2_model_detector():
-    detector = InceptionResNetV2(include_top=False, weights="imagenet", input_shape=(139,139,3), pooling="none")
+    if os.path.exists(weights_detector_filename):
+        weights = weights_detector_filename
+    else:
+        weights = "imagenet"
+
+    detector = InceptionResNetV2(include_top=False, weights=weights, input_shape=(139,139,3), pooling="none")
     #print detector.summary()
     #plot_model(model, to_file="inceptionv2.png", show_shapes=True)
     return detector
 
 def inception_v3_model_detector():
+    if os.path.exists(weights_detector_v3_filename):
+        weights = weights_detector_v3_filename
+    else:
+        weights = "imagenet"
+
     #print help(InceptionV3)
-    detector = InceptionV3(include_top=False, weights="imagenet", input_shape=(139,139,3), pooling=None)
+    detector = InceptionV3(include_top=False, weights=weights, input_shape=(139,139,3), pooling=None)
     #print model.summary()
     #plot_model(model, to_file="inception3.png", show_shapes=True)
     return detector
 
 
 def inception_train_faces():
-
 
     ## make model
 
@@ -37,7 +46,7 @@ def inception_train_faces():
         layer.trainable = False
 
     x = Flatten()(detector.output)
-    x = Dense(4096, activation="relu")(x)
+    x = Dense(2048, activation="relu")(x)
     x = Dense(num_labels, activation="softmax")(x)
 
     model = Model(detector.input, x)
@@ -149,7 +158,7 @@ def make_precompiled_model():
         layer.trainable = False
 
     x = Flatten()(detector.output)
-    x = Dense(4096, activation="relu")(x)
+    x = Dense(2048, activation="relu")(x)
     x = Dense(num_labels, activation="softmax")(x)
 
     model = Model(detector.input, x)
@@ -164,6 +173,7 @@ def make_precompiled_model():
 if __name__ == "__main__":
     weights_filename = "inception_resnet_v2.hdf"
     weights_detector_filename = "inception_resnet_v2_detector.hdf"
+    weights_detector_v3_filename = "inception_resnet_v3_detector.hdf"
     faces_path = "/opt/Project/dataset/faces"
     num_labels = 999
 
