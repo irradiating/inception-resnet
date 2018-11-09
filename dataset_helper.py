@@ -17,7 +17,11 @@ def numpy_restore(filename):
         return samples, labels
 
 def labelfile_append(name="pupkin", filename="/opt/Projects/dataset/labelfile.csv"):
-    if not os.path.exists(filename):
+    if os.path.exists("/opt/Projects/dataset/labelfile.csv"):
+        filename = "/opt/Projects/dataset/labelfile.csv"
+    elif os.path.exists("/opt/Project/dataset/labelfile.csv"):
+        filename = "/opt/Project/dataset/labelfile.csv"
+    else:
         raise Exception("%s does not exist" %(filename))
 
     strtime = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d%H%M%S")
@@ -33,7 +37,11 @@ def labelfile_append(name="pupkin", filename="/opt/Projects/dataset/labelfile.cs
     print name, max_index, np_utils.to_categorical(max_index, 5000)
 
 def labelfile_get_by_name(name="pupkin", filename="/opt/Projects/dataset/labelfile.csv"):
-    if not os.path.exists(filename):
+    if os.path.exists("/opt/Projects/dataset/labelfile.csv"):
+        filename = "/opt/Projects/dataset/labelfile.csv"
+    elif os.path.exists("/opt/Project/dataset/labelfile.csv"):
+        filename = "/opt/Project/dataset/labelfile.csv"
+    else:
         raise Exception("%s does not exist" %(filename))
 
     set = pd.read_csv(filename, sep=":")
@@ -46,7 +54,11 @@ def labelfile_get_by_name(name="pupkin", filename="/opt/Projects/dataset/labelfi
     #print index, np_utils.to_categorical(index, 5000)
 
 def labelfile_get_by_index(index=2, filename="/opt/Projects/dataset/labelfile.csv"):
-    if not os.path.exists(filename):
+    if os.path.exists("/opt/Projects/dataset/labelfile.csv"):
+        filename = "/opt/Projects/dataset/labelfile.csv"
+    elif os.path.exists("/opt/Project/dataset/labelfile.csv"):
+        filename = "/opt/Project/dataset/labelfile.csv"
+    else:
         raise Exception("%s does not exist" %(filename))
 
     set = pd.read_csv(filename, sep=":")
@@ -303,7 +315,7 @@ if __name__ == "__main__":
     #dataset_assemble(faces_path)
     #dataset_load()
 
-    list = dataset_list(path=faces_128_path)
+    list = dataset_list(path=faces_path)
     #print len(list)
     for train, test, validate in list:
         print len(train), len(test), len(validate)
