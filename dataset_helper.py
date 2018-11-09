@@ -16,7 +16,7 @@ def numpy_restore(filename):
         labels = data["arr_1"]
         return samples, labels
 
-def labelfile_append(name="pupkin", filename="/opt/Project/dataset/labelfile.csv"):
+def labelfile_append(name="pupkin", filename="/opt/Projects/dataset/labelfile.csv"):
     if not os.path.exists(filename):
         raise Exception("%s does not exist" %(filename))
 
@@ -32,7 +32,7 @@ def labelfile_append(name="pupkin", filename="/opt/Project/dataset/labelfile.csv
 
     print name, max_index, np_utils.to_categorical(max_index, 5000)
 
-def labelfile_get_by_name(name="pupkin", filename="/opt/Project/dataset/labelfile.csv"):
+def labelfile_get_by_name(name="pupkin", filename="/opt/Projects/dataset/labelfile.csv"):
     if not os.path.exists(filename):
         raise Exception("%s does not exist" %(filename))
 
@@ -45,7 +45,7 @@ def labelfile_get_by_name(name="pupkin", filename="/opt/Project/dataset/labelfil
 
     #print index, np_utils.to_categorical(index, 5000)
 
-def labelfile_get_by_index(index=2, filename="/opt/Project/dataset/labelfile.csv"):
+def labelfile_get_by_index(index=2, filename="/opt/Projects/dataset/labelfile.csv"):
     if not os.path.exists(filename):
         raise Exception("%s does not exist" %(filename))
 
@@ -110,9 +110,6 @@ def dataset_dump_expand():
             shutil.copy2(src=src_name, dst=dst_name)
 
 
-
-
-
 def dataset_assemble(path="/opt/Project/dataset/employee/"):
 
     for setname in ["test", "validate"]:
@@ -160,10 +157,10 @@ def dataset_smalllist_prepare(samplelist):
     return samples, labels
 
 def dataset_list(path="/opt/Project/dataset/faces", items=10):
-    if os.path.exists("/opt/Project/dataset/faces"):
-        path = "/opt/Project/dataset/faces"
-    elif os.path.exists("/opt/Projects/dataset/faces"):
-        path = "/opt/Projects/dataset/faces"
+    # if os.path.exists("/opt/Project/dataset/faces"):
+    #     path = "/opt/Project/dataset/faces"
+    # elif os.path.exists("/opt/Projects/dataset/faces"):
+    #     path = "/opt/Projects/dataset/faces"
 
     items = 10
 
@@ -172,77 +169,92 @@ def dataset_list(path="/opt/Project/dataset/faces", items=10):
 
     for item in os.walk(path):
         dir, _, namelist = item
-        #print dir, namelist
+        # print dir, namelist
 
         if not namelist:
             continue
 
-        workdict[dir] = namelist
+        try:
+            key_string = dir.split("/")[5]
+        except:
+            continue
 
-    for item in range(items):
+        workdict[key_string] = []
+
+        #print key_string, len(namelist)/10
+        chunk = len(namelist)/10
+        for m in range(10):
+            sub_list = []
+            for n in range(chunk):
+                short_name = namelist.pop()
+                full_name = os.path.join(dir, short_name)
+                sub_list.append( full_name )
+            workdict[key_string].append(sub_list)
+
+        # print key_string, len(workdict[key_string])
+        # for a in workdict[key_string]:
+        #     print len(a)
+
+    # print workdict["shamin"][0]
+
+
+    for item in range(10):
 
         train = []
         test = []
         validate = []
 
-        for dir in workdict.keys():
+        for key in workdict.keys():
             try:
-                key = dir.split("/")[5]
                 codekey = labelfile_get_by_name(key)[0]
-                #print codekey
-                namelist = workdict[dir]
-
             except:
                 continue
 
-            # if key == "junk" or key == "other" or key == "blur":
-            #     test_counter = 100
-            #     train_counter = 500
-            # else:
-            #     test_counter = 50
-            #     train_counter = 200
-
-            length = len(namelist)
-            if not length:
-                continue
-            else:
-                test_counter = length * 2 / 100
-                train_counter = length * 6 / 100
+            namelist = workdict[key].pop()
+            total = len(namelist)
+            test_counter = total * 20 / 100
+            train_counter = total * 60 / 100
+            # print codekey, len(namelist), test_counter, train_counter
+            difference = total - ( train_counter + test_counter*2 )
+            if difference < 0:
+                print "anomaly"
+                break
 
 
             for counter in range(test_counter):
                 try:
-                    name = os.path.join( dir, namelist.pop() )
-                    #if os.path.exists(name):
-                        #print name, codekey
-                    test.append( (codekey, name) )
-
-                    name = os.path.join( dir, namelist.pop() )
-                    #if os.path.exists(name):
-                        #print name, codekey
-                    validate.append( (codekey, name) )
-
-                    #print len(test), len(validate)
+                    name = namelist.pop()
+                    name1 = namelist.pop()
                 except:
-                    break
+                    print "no test name to pop from list"
+                    continue
+
+                if not os.path.exists(name1):
+                    continue
+                    #print codekey, name
+
+                test.append( (codekey, name) )
+                validate.append( (codekey, name1) )
+
+                # print len(test), len(validate)
 
             for counter in range(train_counter):
                 try:
-                    name = os.path.join(dir, namelist.pop())
-                    # if os.path.exists(name):
-                    #     print name, codekey
-                    train.append( (codekey, name) )
-
-                    #print len(train)
+                    name = namelist.pop()
                 except:
-                    break
+                    print "no train name to pop from list"
+                    continue
+
+                train.append((codekey, name))
 
         print item, len(train), len(test), len(validate)
         if train and test and validate:
             finallist.append([train, test, validate])
 
-    finallist.reverse()
+    # finallist.reverse()
     return finallist
+
+
 
 def dataset_load(path="/opt/Project/dataset/faces/"):
     train_set = os.path.join(path, "train.npz")
@@ -285,15 +297,15 @@ def resize_and_rename(source="/opt/Project/dataset/faces", dest="/mnt/nfs/webhos
 
 if __name__ == "__main__":
     faces_path = "/opt/Project/dataset/faces/"
-    faces_128_path = "/opt/Project/dataset/faces_128/"
+    faces_128_path = "/opt/Projects/dataset/faces_80/"
 
     #initial_make_small_dir_chunks(faces_path)
     #dataset_assemble(faces_path)
     #dataset_load()
 
-    # list = dataset_list(faces_128_path)
-    # print len(list)
-    # for train, test, validate in list:
-    #     print len(train), len(test), len(validate)
+    list = dataset_list(path=faces_128_path)
+    #print len(list)
+    for train, test, validate in list:
+        print len(train), len(test), len(validate)
 
-    dataset_dump_expand()
+    #dataset_dump_expand()

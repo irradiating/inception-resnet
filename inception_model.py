@@ -64,9 +64,9 @@ def inception_train_faces():
     if os.path.exists(weights_filename):
         print "loading existing model weights"
         model.load_weights(weights_filename)
-    elif os.path.exists(weights_detector_filename):
-        print "loading existing detector weights"
-        detector.load_weights(weights_detector_filename)
+    # elif os.path.exists(weights_detector_filename):
+    #     print "loading existing detector weights"
+    #     detector.load_weights(weights_detector_filename)
 
 
     print "loading dataset"
